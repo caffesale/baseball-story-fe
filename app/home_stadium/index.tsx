@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Link, usePathname, useRouter } from "expo-router";
 import React from "react";
@@ -8,7 +8,8 @@ export default function HomeStadium() {
     const router = useRouter();
     const pathname = usePathname();
     React.useEffect(() => {
-        if (true) {
+        const random = Math.random();
+        if (random >= 0.5) {
             console.log("Current segments:", pathname);
             router.replace("/home_stadium/new");
         }
@@ -18,7 +19,7 @@ export default function HomeStadium() {
             <HStack>
                 <Link href="./edit" asChild>
                     <Button>
-                        <Text>홈 구장 수정</Text>
+                        <ButtonText>홈 구장 수정</ButtonText>
                     </Button>
                 </Link>
             </HStack>
