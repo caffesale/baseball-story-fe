@@ -11,12 +11,19 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@expo/html-elements": "^0.4.2",
     "@expo/vector-icons": "^14.1.0",
+    "@gluestack-ui/actionsheet": "^0.2.53",
+    "@gluestack-ui/avatar": "^0.1.18",
     "@gluestack-ui/button": "^1.0.14",
+    "@gluestack-ui/form-control": "^0.1.19",
     "@gluestack-ui/icon": "^0.1.27",
+    "@gluestack-ui/input": "^0.1.38",
     "@gluestack-ui/nativewind-utils": "^1.0.26",
     "@gluestack-ui/overlay": "^0.1.22",
+    "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/toast": "^1.0.9",
+    "@legendapp/motion": "^2.4.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "expo": "~53.0.10",
     "expo-blur": "~14.1.5",
@@ -24,6 +31,7 @@
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.2.0",
+    "expo-image-picker": "~16.1.4",
     "expo-linking": "~7.1.5",
     "expo-router": "~5.0.7",
     "expo-splash-screen": "~0.30.9",
@@ -44,7 +52,8 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

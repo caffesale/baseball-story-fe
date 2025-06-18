@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-export default function New() {
+export default function NotFound() {
     return (
         <View>
-            <Text>New</Text>
+            <Text>+not-found</Text>
         </View>
     );
 }
