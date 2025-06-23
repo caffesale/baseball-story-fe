@@ -11,9 +11,10 @@ import { Radio, RadioGroup, RadioLabel } from "@/components/ui/radio";
 import { VStack } from "@/components/ui/vstack";
 import { Banner } from "@/shared/ui";
 import { TEAM_CODE, TEAM_INFO } from "@/shared/utils/constants";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 interface StadiumFormData {
     name: string;
@@ -29,7 +30,6 @@ export default function NewStadium() {
         control,
         handleSubmit,
         formState: { errors },
-        getValues,
     } = useForm<StadiumFormData>({
         defaultValues: {
             name: "",
@@ -45,8 +45,12 @@ export default function NewStadium() {
         setStep((prev) => Math.max(prev - 1, 0));
     };
 
+    /**
+     * 나중에 api콜로 수정하기
+     */
+    const router = useRouter();
     const onSubmit = (data: StadiumFormData) => {
-        console.log(data);
+        router.replace("/home_stadium/1");
     };
 
     return (
@@ -93,11 +97,11 @@ export default function NewStadium() {
                                 render={({
                                     field: { value: values, onChange },
                                 }) => (
-                                    <RadioGroup
-                                        value={values}
-                                        onChange={onChange}
-                                    >
-                                        <VStack space="md">
+                                    <ScrollView style={{ maxHeight: 300 }}>
+                                        <RadioGroup
+                                            value={values}
+                                            onChange={onChange}
+                                        >
                                             {Object.keys(TEAM_INFO).map(
                                                 (teamCode) => {
                                                     const team =
@@ -112,18 +116,25 @@ export default function NewStadium() {
                                                             <RadioLabel
                                                                 accessibilityLabel={`${teamInfo.name}`}
                                                                 className="sr-only"
-                                                            >{`${teamInfo.name}`}</RadioLabel>
+                                                            >
+                                                                {teamInfo.name}
+                                                            </RadioLabel>
                                                             <Banner
                                                                 source={
                                                                     teamInfo.image
                                                                 }
+                                                                selected={
+                                                                    teamCode ===
+                                                                    values
+                                                                }
+                                                                className="w-full"
                                                             />
                                                         </Radio>
                                                     );
                                                 }
                                             )}
-                                        </VStack>
-                                    </RadioGroup>
+                                        </RadioGroup>
+                                    </ScrollView>
                                 )}
                             />
                         </>
