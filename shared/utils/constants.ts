@@ -53,6 +53,6 @@ const TEAM_INFO = {
 
 type TEAM_CODE = keyof typeof TEAM_INFO;
 
-export { TEAM_CODE, TEAM_INFO };
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-const keys = Object.keys(TEAM_INFO);
+export { apiUrl, TEAM_CODE, TEAM_INFO };

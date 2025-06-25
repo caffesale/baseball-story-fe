@@ -1,0 +1,1 @@
+export { IPostStadium } from "./stadium";

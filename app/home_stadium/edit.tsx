@@ -1,4 +1,3 @@
-import { TStadium } from "@/components/logic/home-stadium-form";
 import { Button, ButtonText } from "@/components/ui/button";
 import {
     FormControl,
@@ -8,15 +7,14 @@ import {
 } from "@/components/ui/form-control";
 import { Input, InputField } from "@/components/ui/input";
 import { VStack } from "@/components/ui/vstack";
-import { useRouter } from "expo-router";
+import { useUpdateStadium } from "@/entities";
 import React from "react";
 import { View } from "react-native";
 
-type TEditStadium = Pick<TStadium, "name">;
-
 export default function EditStadium() {
-    const [name, setName] = React.useState<TEditStadium>({ name: "" });
-    const router = useRouter();
+    const [name, setName] = React.useState<{ name: string }>({ name: "" });
+    // const router = useRouter();
+    const patchStadium = useUpdateStadium();
     return (
         <View className="w-full max-w-[300px] rounded-md border border-background-200 p-4">
             <VStack>
@@ -44,8 +42,11 @@ export default function EditStadium() {
                     size="md"
                     variant="outline"
                     onPress={() => {
-                        console.log({ name }, "form Submitted!");
-                        router.replace("./index");
+                        patchStadium.mutate({
+                            stadiumId: "1",
+                            name: name.name,
+                        });
+                        // router.replace("./index");
                     }}
                 >
                     <ButtonText>Submit</ButtonText>

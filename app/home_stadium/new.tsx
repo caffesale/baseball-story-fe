@@ -1,3 +1,4 @@
+import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import {
     FormControl,
@@ -9,6 +10,7 @@ import { Heading } from "@/components/ui/heading";
 import { Input, InputField } from "@/components/ui/input";
 import { Radio, RadioGroup, RadioLabel } from "@/components/ui/radio";
 import { VStack } from "@/components/ui/vstack";
+import { IPostStadium, useCreateStadium } from "@/entities";
 import { Banner } from "@/shared/ui";
 import { TEAM_CODE, TEAM_INFO } from "@/shared/utils/constants";
 import { useRouter } from "expo-router";
@@ -16,181 +18,160 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, View } from "react-native";
 
-interface StadiumFormData {
-    name: string;
-    selectedTeam: TEAM_CODE;
-    favoriteMember: string;
-}
-
-const steps = ["홈구장 이름", "팀 선택", "최애 선수 설정"];
-
 export default function NewStadium() {
-    const [step, setStep] = React.useState<number>(0);
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<StadiumFormData>({
+    const { control, handleSubmit } = useForm<IPostStadium>({
         defaultValues: {
             name: "",
             selectedTeam: "DOOSAN",
-            favoriteMember: "",
         },
     });
-
-    const onNext = () => {
-        setStep((prev) => Math.min(prev + 1, steps.length - 1));
-    };
-    const onBack = () => {
-        setStep((prev) => Math.max(prev - 1, 0));
-    };
-
-    /**
-     * 나중에 api콜로 수정하기
-     */
+    const createStadium = useCreateStadium();
     const router = useRouter();
-    const onSubmit = (data: StadiumFormData) => {
-        router.replace("/home_stadium/1");
-    };
 
     return (
         <View className="mt-4">
-            <VStack space="lg">
-                <Heading size="lg">홈구장 생성</Heading>
-                <FormControl className="max-w-xs">
-                    {step === 0 && (
-                        <>
-                            <FormControlLabel>
-                                <FormControlLabelText>
-                                    홈구장 이름
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <Controller
-                                control={control}
-                                name="name"
-                                rules={{ required: true }}
-                                render={({ field: { value, onChange } }) => (
-                                    <Input size="md">
-                                        <InputField
-                                            value={value}
-                                            onChangeText={onChange}
-                                        />
-                                    </Input>
-                                )}
-                            />
-                            <FormControlHelperText>
-                                홈구장 이름은 닉네임으로 사용됩니다.
-                            </FormControlHelperText>
-                        </>
-                    )}
-                    {step === 1 && (
-                        <>
-                            <FormControlLabel>
-                                <FormControlLabelText>
-                                    team
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <Controller
-                                control={control}
-                                name="selectedTeam"
-                                rules={{ required: true }}
-                                render={({
-                                    field: { value: values, onChange },
-                                }) => (
-                                    <ScrollView style={{ maxHeight: 300 }}>
-                                        <RadioGroup
-                                            value={values}
-                                            onChange={onChange}
-                                        >
-                                            {Object.keys(TEAM_INFO).map(
-                                                (teamCode) => {
-                                                    const team =
-                                                        teamCode as TEAM_CODE;
-                                                    const teamInfo =
-                                                        TEAM_INFO[team];
-                                                    return (
-                                                        <Radio
-                                                            key={team}
-                                                            value={team}
-                                                        >
-                                                            <RadioLabel
-                                                                accessibilityLabel={`${teamInfo.name}`}
-                                                                className="sr-only"
+            <Box className="justify-center items-center">
+                <VStack space="lg">
+                    <Heading size="lg">홈구장 생성</Heading>
+                    <FormControl className="max-w-xs">
+                        <VStack space="lg">
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        홈구장 이름
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    control={control}
+                                    name="name"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value, onChange },
+                                    }) => (
+                                        <Input size="md">
+                                            <InputField
+                                                value={value}
+                                                onChangeText={onChange}
+                                            />
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlHelperText>
+                                    홈구장 이름은 닉네임으로 사용됩니다.
+                                </FormControlHelperText>
+                            </Box>
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        team
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    control={control}
+                                    name="selectedTeam"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value: values, onChange },
+                                    }) => (
+                                        <ScrollView style={{ maxHeight: 300 }}>
+                                            <RadioGroup
+                                                value={values}
+                                                onChange={onChange}
+                                            >
+                                                {Object.keys(TEAM_INFO).map(
+                                                    (teamCode) => {
+                                                        const team =
+                                                            teamCode as TEAM_CODE;
+                                                        const teamInfo =
+                                                            TEAM_INFO[team];
+                                                        return (
+                                                            <Radio
+                                                                key={team}
+                                                                value={team}
                                                             >
-                                                                {teamInfo.name}
-                                                            </RadioLabel>
-                                                            <Banner
-                                                                source={
-                                                                    teamInfo.image
-                                                                }
-                                                                selected={
-                                                                    teamCode ===
-                                                                    values
-                                                                }
-                                                                className="w-full"
-                                                            />
-                                                        </Radio>
-                                                    );
-                                                }
-                                            )}
-                                        </RadioGroup>
-                                    </ScrollView>
-                                )}
-                            />
-                        </>
-                    )}
-                    {step === 2 && (
-                        <>
-                            <FormControlLabel>
-                                <FormControlLabelText>
-                                    최애 선수 설정
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <Controller
-                                control={control}
-                                name="favoriteMember"
-                                render={({
-                                    field: { value: values, onChange },
-                                }) => {
-                                    return (
-                                        <RadioGroup
-                                            value={values}
-                                            onChange={onChange}
-                                        >
-                                            <Radio value="이대호">
-                                                <RadioLabel>이대호</RadioLabel>
-                                            </Radio>
-                                            <Radio value="류현진">
-                                                <RadioLabel>류현진</RadioLabel>
-                                            </Radio>
-                                        </RadioGroup>
-                                    );
-                                }}
-                            />
-                        </>
-                    )}
-                </FormControl>
-                <VStack space="sm">
-                    {step > 0 && (
-                        <Button size="md" variant="outline" onPress={onBack}>
-                            <ButtonText>Back</ButtonText>
-                        </Button>
-                    )}
-                    {step < steps.length - 1 ? (
-                        <Button size="md" variant="outline" onPress={onNext}>
-                            <ButtonText>Next</ButtonText>
-                        </Button>
-                    ) : (
-                        <Button
-                            size="md"
-                            variant="outline"
-                            onPress={handleSubmit(onSubmit)}
-                        >
-                            <ButtonText>Submit</ButtonText>
-                        </Button>
-                    )}
+                                                                <RadioLabel
+                                                                    accessibilityLabel={`${teamInfo.name}`}
+                                                                    className="sr-only"
+                                                                >
+                                                                    {
+                                                                        teamInfo.name
+                                                                    }
+                                                                </RadioLabel>
+                                                                <Banner
+                                                                    source={
+                                                                        teamInfo.image
+                                                                    }
+                                                                    selected={
+                                                                        teamCode ===
+                                                                        values
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            </Radio>
+                                                        );
+                                                    }
+                                                )}
+                                            </RadioGroup>
+                                        </ScrollView>
+                                    )}
+                                />
+                            </Box>
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        최애선수 선택
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                {/* <Controller
+                                    control={control}
+                                    name="favoritePlayer"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value, onChange },
+                                    }) => (
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectInput />
+                                                <SelectIcon as={ChevronDown} />
+                                            </SelectTrigger>
+                                            <SelectPortal>
+                                                <SelectBackdrop />
+                                                <SelectContent>
+                                                    <SelectDragIndicatorWrapper>
+                                                        <SelectDragIndicator />
+                                                    </SelectDragIndicatorWrapper>
+                                                    <SelectItem
+                                                        label="이대호"
+                                                        value="이대호"
+                                                    />
+                                                </SelectContent>
+                                            </SelectPortal>
+                                        </Select>
+                                    )}
+                                /> */}
+                            </Box>
+                            <Box>
+                                <Button
+                                    size="md"
+                                    variant="outline"
+                                    className=""
+                                    onPress={handleSubmit((data) => {
+                                        console.log("ok");
+
+                                        router.replace("../home_stadium/1");
+                                        // createStadium.mutate({
+                                        //     ...data,
+                                        //     ownerId: 1,
+                                        // });
+                                    })}
+                                >
+                                    <ButtonText>Submit</ButtonText>
+                                </Button>
+                            </Box>
+                        </VStack>
+                    </FormControl>
                 </VStack>
-            </VStack>
+            </Box>
         </View>
     );
 }
