@@ -1,7 +1,4 @@
-import ImagePicker from "@/components/ImagePicker";
-import { teamSchema, TTeam } from "@/components/logic/team-type";
-import useStadiumForm from "@/components/logic/use-stadium-form";
-import useImage from "@/components/logic/useImage";
+import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import {
     FormControl,
@@ -9,94 +6,172 @@ import {
     FormControlLabel,
     FormControlLabelText,
 } from "@/components/ui/form-control";
+import { Heading } from "@/components/ui/heading";
 import { Input, InputField } from "@/components/ui/input";
-import {
-    Select,
-    SelectBackdrop,
-    SelectIcon,
-    SelectInput,
-    SelectItem,
-    SelectPortal,
-    SelectTrigger,
-} from "@/components/ui/select";
+import { Radio, RadioGroup, RadioLabel } from "@/components/ui/radio";
 import { VStack } from "@/components/ui/vstack";
+import { IPostStadium, useCreateStadium } from "@/entities";
+import { Banner } from "@/shared/ui";
+import { TEAM_CODE, TEAM_INFO } from "@/shared/utils/constants";
 import { useRouter } from "expo-router";
-import { ChevronDown } from "lucide-react-native";
 import React from "react";
-import { View } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { ScrollView, View } from "react-native";
 
 export default function NewStadium() {
-    const { formData, setFormData } = useStadiumForm();
-    const { img: image, pickImageAsync } = useImage();
-    const handleSubmit = () => {
-        console.log(formData);
-    };
+    const { control, handleSubmit } = useForm<IPostStadium>({
+        defaultValues: {
+            name: "",
+            selectedTeam: "DOOSAN",
+        },
+    });
+    const createStadium = useCreateStadium();
     const router = useRouter();
+
     return (
-        <View>
-            <VStack className="w-full max-w-[300px] rounded-md border border-background-200 p-4">
-                <FormControl size="md">
-                    <FormControlLabel>
-                        <FormControlLabelText>name</FormControlLabelText>
-                    </FormControlLabel>
-                    <Input>
-                        <InputField
-                            type="text"
-                            value={formData.name}
-                            onChangeText={(value) =>
-                                setFormData({
-                                    ...formData,
-                                    name: value,
-                                })
-                            }
-                            placeholder="홍길동의 홈구장"
-                        />
-                    </Input>
-                    <FormControlHelperText>
-                        홈구장 이름은 닉네임으로 사용됩니다.
-                    </FormControlHelperText>
-                    <FormControlLabel>
-                        <FormControlLabelText>team</FormControlLabelText>
-                    </FormControlLabel>
-                    <Select
-                        onValueChange={(value) =>
-                            setFormData({
-                                ...formData,
-                                team: value as TTeam,
-                            })
-                        }
-                    >
-                        <SelectTrigger variant="outline" size="md">
-                            <SelectInput placeholder="팀을 선택해주세요" />
-                            <SelectIcon className="mr-3" as={ChevronDown} />
-                        </SelectTrigger>
-                        <SelectPortal>
-                            <SelectBackdrop />
-                            {teamSchema.options.map((team) => {
-                                return (
-                                    <SelectItem
-                                        key={team}
-                                        label={team}
-                                        value={team}
-                                    />
-                                );
-                            })}
-                        </SelectPortal>
-                    </Select>
-                    <ImagePicker pickImageAsync={pickImageAsync} />
-                </FormControl>
-                <Button
-                    size="md"
-                    variant="outline"
-                    onPress={() => {
-                        console.log({ formData, ...image }, "form Submitted!");
-                        // handleSubmit(formData)
-                        router.replace("../home");
-                    }}
-                >
-                    <ButtonText>Submit</ButtonText>
-                </Button>
-            </VStack>
+        <View className="mt-4">
+            <Box className="justify-center items-center">
+                <VStack space="lg">
+                    <Heading size="lg">홈구장 생성</Heading>
+                    <FormControl className="max-w-xs">
+                        <VStack space="lg">
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        홈구장 이름
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    control={control}
+                                    name="name"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value, onChange },
+                                    }) => (
+                                        <Input size="md">
+                                            <InputField
+                                                value={value}
+                                                onChangeText={onChange}
+                                            />
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlHelperText>
+                                    홈구장 이름은 닉네임으로 사용됩니다.
+                                </FormControlHelperText>
+                            </Box>
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        team
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    control={control}
+                                    name="selectedTeam"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value: values, onChange },
+                                    }) => (
+                                        <ScrollView style={{ maxHeight: 300 }}>
+                                            <RadioGroup
+                                                value={values}
+                                                onChange={onChange}
+                                            >
+                                                {Object.keys(TEAM_INFO).map(
+                                                    (teamCode) => {
+                                                        const team =
+                                                            teamCode as TEAM_CODE;
+                                                        const teamInfo =
+                                                            TEAM_INFO[team];
+                                                        return (
+                                                            <Radio
+                                                                key={team}
+                                                                value={team}
+                                                            >
+                                                                <RadioLabel
+                                                                    accessibilityLabel={`${teamInfo.name}`}
+                                                                    className="sr-only"
+                                                                >
+                                                                    {
+                                                                        teamInfo.name
+                                                                    }
+                                                                </RadioLabel>
+                                                                <Banner
+                                                                    source={
+                                                                        teamInfo.image
+                                                                    }
+                                                                    selected={
+                                                                        teamCode ===
+                                                                        values
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            </Radio>
+                                                        );
+                                                    }
+                                                )}
+                                            </RadioGroup>
+                                        </ScrollView>
+                                    )}
+                                />
+                            </Box>
+                            <Box>
+                                <FormControlLabel>
+                                    <FormControlLabelText>
+                                        최애선수 선택
+                                    </FormControlLabelText>
+                                </FormControlLabel>
+                                {/* <Controller
+                                    control={control}
+                                    name="favoritePlayer"
+                                    rules={{ required: true }}
+                                    render={({
+                                        field: { value, onChange },
+                                    }) => (
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectInput />
+                                                <SelectIcon as={ChevronDown} />
+                                            </SelectTrigger>
+                                            <SelectPortal>
+                                                <SelectBackdrop />
+                                                <SelectContent>
+                                                    <SelectDragIndicatorWrapper>
+                                                        <SelectDragIndicator />
+                                                    </SelectDragIndicatorWrapper>
+                                                    <SelectItem
+                                                        label="이대호"
+                                                        value="이대호"
+                                                    />
+                                                </SelectContent>
+                                            </SelectPortal>
+                                        </Select>
+                                    )}
+                                /> */}
+                            </Box>
+                            <Box>
+                                <Button
+                                    size="md"
+                                    variant="outline"
+                                    className=""
+                                    onPress={handleSubmit((data) => {
+                                        console.log("ok");
+
+                                        router.replace("../home_stadium/1");
+                                        // createStadium.mutate({
+                                        //     ...data,
+                                        //     ownerId: 1,
+                                        // });
+                                    })}
+                                >
+                                    <ButtonText>Submit</ButtonText>
+                                </Button>
+                            </Box>
+                        </VStack>
+                    </FormControl>
+                </VStack>
+            </Box>
         </View>
     );
 }

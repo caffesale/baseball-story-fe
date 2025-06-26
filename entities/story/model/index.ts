@@ -1,0 +1,1 @@
+export { TStory } from "./types";
